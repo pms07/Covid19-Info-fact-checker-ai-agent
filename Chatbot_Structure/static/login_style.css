@@ -1,0 +1,118 @@
+/* Gradient background & body reset */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    height: 100vh;
+    background: rgb(44, 47, 59);
+    background: -webkit-linear-gradient(
+      to right,
+      rgb(40, 59, 34),
+      rgb(54, 60, 70),
+      rgb(32, 32, 43)
+    );
+    background: linear-gradient(
+      to right,
+      rgb(38, 51, 61),
+      rgb(50, 55, 65),
+      rgb(33, 33, 78)
+    );
+}
+
+/* Dark Navy Navbar to match chat page */
+#mainNavbar {
+    background-color: #1a1a2e !important;
+}
+
+/* 
+  Use .login-main to give space below the navbar 
+  (instead of using inline styles in <main>).
+*/
+.login-main {
+    padding-top: 56px;
+    min-height: calc(100vh - 56px);
+}
+
+/* The card container for the login form */
+.login-card.container {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    text-align: center;
+    color: #fff;
+}
+
+.login-card h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #fff;
+}
+
+/* Adjust form groups for text-left labels */
+.login-card .form-group label {
+    margin-bottom: 5px;
+    color: #f0eeee;
+}
+
+/* Inputs share consistent style */
+.login-card input.form-control {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+}
+
+/* Buttons with hover effect */
+.login-card button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Primary login button */
+.login-card .btn-primary {
+    background-color: #007bff;
+    margin-top: 10px;
+}
+.login-card .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Secondary signup button (centered) */
+.signup-btn {
+    margin-top: 10px;
+    display: inline-block;
+    background-color: #6c757d;
+    color: #fff;
+}
+.signup-btn:hover {
+    background-color: #5a6268;
+}
+
+/* MODAL STYLING for signup */
+.modal-signup-content {
+    background-color: #fff;
+    color: #000;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.modal-signup-content label {
+    color: #000;
+    font-weight: 500;
+}
+.modal-signup-content .form-control {
+    color: #000;
+    background-color: #f8f9fa;
+}
+.modal-signup-content .form-control::placeholder {
+    color: #6c757d;
+}
+
+

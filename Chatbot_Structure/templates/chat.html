@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ChatBud</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome (no integrity attribute, to avoid SRI errors) -->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    />
+
+    <!-- Custom CSS (style.css) -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- Site Header -->
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark" id="mainNavbar">
+        <!-- Brand (left) -->
+        <a class="navbar-brand" href="#">ChatBud</a>
+
+        <!-- Toggler for small screens -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarCollapse"
+          aria-controls="navbarCollapse"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+
+        <!-- Right-aligned nav items -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav ml-auto">
+            <!-- Button to collapse the Sessions Sidebar -->
+            <li class="nav-item mr-2">
+              <button class="btn btn-outline-light" id="toggleSidebar">
+                Toggle Sessions
+              </button>
+            </li>
+            <!-- Logout link on the far right -->
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <!-- End Site Header -->
+
+    <div class="container-fluid h-100 main-container">
+      <div class="row h-100 flex-nowrap">
+        <!-- Main chat area (on the left) -->
+        <div class="col-md-9 col-xl-10 chat-column">
+          <div class="card h-100">
+            <div class="card-header msg_head">
+              <div class="d-flex bd-highlight">
+                <div class="img_cont">
+                  <img src="{{ url_for('static', filename='logo.jpeg') }}" class="rounded-circle user_img" />
+                  <span class="online_icon"></span>
+                </div>
+                <div class="user_info">
+                  <span>ChatBud</span>
+                  <p>Ask me anything!</p>
+                </div>
+              </div>
+            </div>
+            <!-- The scrollable chat body -->
+            <div
+              id="messageFormeight"
+              class="card-body msg_card_body"
+            ></div>
+
+            <div class="card-footer">
+              <form id="messageArea" class="input-group">
+                <input
+                  type="text"
+                  id="text"
+                  name="msg"
+                  placeholder="Type your message..."
+                  autocomplete="off"
+                  class="form-control type_msg"
+                  required
+                />
+                <div class="input-group-append">
+                  <button
+                    type="submit"
+                    id="send"
+                    class="input-group-text send_btn"
+                  >
+                    <i class="fas fa-location-arrow"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar for past sessions -->
+        <div
+          class="col-md-3 col-xl-2 sidebar-column"
+          id="sidebar"
+        >
+          <h5 class="p-2 text-white">Previous Sessions</h5>
+          <!-- List group to hold all session items -->
+          <ul id="sessionList" class="list-group border-0"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal of showing old session history -->
+    <div
+      class="modal fade"
+      id="historyModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="historyModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="historyModalLabel">Session History</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span>&times;</span>
+            </button>
+          </div>
+          <div
+            class="modal-body"
+            id="historyChatBody"
+            style="max-height: 400px; overflow-y: auto;"
+          ></div>
+        </div>
+      </div>
+    </div>
+    <!-- End Modal -->
+
+    <!-- jQuery (must load before Bootstrap JS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
+    <script>
+      /***************************************************************
+       * Scroll the main chat window to the bottom
+       ***************************************************************/
+      function scrollToBottom() {
+        const messageBody = document.getElementById("messageFormeight");
+        messageBody.scrollTop = messageBody.scrollHeight;
+      }
+
+      /***************************************************************
+       * Display messages in the main chat area
+       ***************************************************************/
+      function displayMessagesInMainChat(messageArray) {
+        const chatContainer = $("#messageFormeight");
+        chatContainer.empty();
+
+        messageArray.forEach((msg) => {
+          const now = new Date();
+          const hour = now.getHours();
+          const minute = now.getMinutes();
+          const timeString = hour + ":" + (minute < 10 ? "0" + minute : minute);
+
+          if (msg.role === "user") {
+            // User message
+            const userHtml = `
+              <div class="d-flex justify-content-end mb-4">
+                <div class="msg_cotainer_send">
+                  ${msg.content}
+                  <span class="msg_time_send">${timeString}</span>
+                </div>
+                <div class="img_cont_msg">
+                  <img
+                    src="https://i.ibb.co/d5b84Xw/Untitled-design.png"
+                    class="rounded-circle user_img_msg"
+                  />
+                </div>
+              </div>
+            `;
+            chatContainer.append(userHtml);
+          } else if (msg.role === "assistant") {
+            // Assistant/bot reply
+            const botHtml = `
+              <div class="d-flex justify-content-start mb-4">
+                <div class="img_cont_msg">
+                  <img src="{{ url_for('static', filename='logo.jpeg') }}" class="rounded-circle user_img_msg" />
+                </div>
+                <div class="msg_cotainer">
+                  ${msg.content}
+                  <span class="msg_time">${timeString}</span>
+                </div>
+              </div>
+            `;
+            chatContainer.append(botHtml);
+          }
+        });
+
+        scrollToBottom();
+      }
+
+      /***************************************************************
+       * Open a modal showing old session messages
+       ***************************************************************/
+      function openHistoryModal(messageArray) {
+        const historyContainer = $("#historyChatBody");
+        historyContainer.empty();
+
+        $("#historyModalLabel").text("Session History");
+
+        // Populate the modal with old messages
+        messageArray.forEach((msg) => {
+          const now = new Date();
+          const hour = now.getHours();
+          const minute = now.getMinutes();
+          const timeString = hour + ":" + (minute < 10 ? "0" + minute : minute);
+
+          if (msg.role === "user") {
+            const userHtml = `
+              <div class="d-flex justify-content-end mb-2">
+                <div class="msg_cotainer_send">
+                  ${msg.content}
+                  <span class="msg_time_send">${timeString}</span>
+                </div>
+                <div class="img_cont_msg">
+                  <img
+                    src="https://i.ibb.co/d5b84Xw/Untitled-design.png"
+                    class="rounded-circle user_img_msg"
+                  />
+                </div>
+              </div>
+            `;
+            historyContainer.append(userHtml);
+          } else if (msg.role === "assistant") {
+            const botHtml = `
+              <div class="d-flex justify-content-start mb-2">
+                <div class="img_cont_msg">
+                  <img src="{{ url_for('static', filename='logo.jpeg') }}" class="rounded-circle user_img_msg" />
+                </div>
+                <div class="msg_cotainer">
+                  ${msg.content}
+                  <span class="msg_time">${timeString}</span>
+                </div>
+              </div>
+            `;
+            historyContainer.append(botHtml);
+          }
+        });
+
+        // Show the modal
+        $("#historyModal").modal("show");
+      }
+
+      /***************************************************************
+       * Convert "YYYY-MM-DD HH:MM:SS" to "MonthName Day, Year"
+       ***************************************************************/
+      function formatSessionDate(isoString) {
+        const [datePart] = isoString.split(" "); // e.g. "2025-04-04"
+        const [year, month, day] = datePart.split("-").map(num => parseInt(num, 10));
+        const dateObj = new Date(year, month - 1, day);
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        return dateObj.toLocaleDateString("en-US", options);
+      }
+
+      /***************************************************************
+       * Load all previous sessions into the sidebar on the right
+       ***************************************************************/
+      function loadSessionList() {
+        $.ajax({
+          url: "/chat_history",
+          type: "GET",
+          success: function (data) {
+            const sessionList = $("#sessionList");
+            sessionList.empty();
+
+            data.forEach((session) => {
+              // If custom_label is set, use it ("Current Chat"); else show date
+              const displayLabel = session.custom_label
+                ? session.custom_label
+                : formatSessionDate(session.session_start);
+
+              let endString = "";
+              if (session.session_end) {
+                const formattedEnd = formatSessionDate(session.session_end);
+                endString = `<br/><small>Ended: ${formattedEnd}</small>`;
+              }
+
+              const listItem = $(`
+                <li class="list-group-item session-item" style="cursor: pointer;">
+                  <strong>${displayLabel}</strong>
+                  ${endString}
+                </li>
+              `);
+
+              // Show old messages in a modal on click
+              listItem.on("click", function () {
+                if (session.chat_data && session.chat_data.length > 0) {
+                  openHistoryModal(session.chat_data);
+                } else {
+                  openHistoryModal([]);
+                }
+              });
+
+              sessionList.append(listItem);
+            });
+          },
+          error: function (err) {
+            console.log("Error loading session list:", err);
+          },
+        });
+      }
+
+      /***************************************************************
+       * On document ready: set up toggles & load sessions
+       ***************************************************************/
+      $(document).ready(function () {
+        // 1) Load previous sessions (the server already excludes empty ones)
+        loadSessionList();
+
+        // 2) Toggle the sessions sidebar
+        $("#toggleSidebar").on("click", function () {
+          $("#sidebar").toggleClass("d-none");
+        });
+
+        // 3) Sending messages
+        $("#messageArea").on("submit", function (event) {
+          event.preventDefault();
+          const date = new Date();
+          const hour = date.getHours();
+          const minute = date.getMinutes();
+          const str_time = hour + ":" + (minute < 10 ? "0" + minute : minute);
+          const rawText = $("#text").val();
+
+          // Display user message
+          const userHtml = `
+            <div class="d-flex justify-content-end mb-4">
+              <div class="msg_cotainer_send">
+                ${rawText}
+                <span class="msg_time_send">${str_time}</span>
+              </div>
+              <div class="img_cont_msg">
+                <img
+                  src="https://i.ibb.co/d5b84Xw/Untitled-design.png"
+                  class="rounded-circle user_img_msg"
+                />
+              </div>
+            </div>
+          `;
+          $("#messageFormeight").append(userHtml);
+          $("#text").val("");
+          scrollToBottom();
+
+          // POST user input to Flask
+          $.ajax({
+            data: { msg: rawText },
+            type: "POST",
+            url: "/get",
+          }).done(function (data) {
+            // Display the assistant's response
+            const botHtml = `
+              <div class="d-flex justify-content-start mb-4">
+                <div class="img_cont_msg">
+                  <img
+                    src="{{ url_for('static', filename='logo.jpeg') }}"
+                    class="rounded-circle user_img_msg"
+                  />
+                </div>
+                <div class="msg_cotainer">
+                  ${data}
+                  <span class="msg_time">${str_time}</span>
+                </div>
+              </div>
+            `;
+            $("#messageFormeight").append($.parseHTML(botHtml));
+            scrollToBottom();
+
+            loadSessionList();
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

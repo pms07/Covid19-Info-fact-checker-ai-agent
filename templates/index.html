@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vaccine Hesitancy Simulation Lab</title>
+
+  <!-- CSS & libraries -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/styles.css') }}"
+  />
+</head>
+<body>
+  <div class="container py-4" style="max-width: 1520px;">
+    <header class="mb-5">
+      <h1 class="text-center">Vaccine Hesitancy Simulation Lab</h1>
+    </header>
+
+    <div class="row">
+      <!-- AGENTS COLUMN -->
+      <div class="col-md-4 mb-4">
+        <div class="panel h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Agents</h2>
+            <button id="add-agent-btn" class="btn btn-primary btn-sm">+ Add Agent</button>
+          </div>
+          <div id="agents-container" class="panel-content"></div>
+        </div>
+      </div>
+
+      <!-- NEWS COLUMN -->
+      <div class="col-md-4 mb-4">
+        <div class="panel h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">News</h2>
+            <div>
+              <button id="add-news-btn" class="btn btn-primary btn-sm me-1">+ Add News</button>
+              <button id="fetch-news-btn" class="btn btn-outline-secondary btn-sm" title="Fetch live news">
+                <i class="fas fa-cloud-download-alt"></i>
+              </button>
+              <button id="clear-news-btn" class="btn btn-outline-danger btn-sm">Clear News</button>
+            </div>
+          </div>
+          <div class="input-group input-group-sm mt-2">
+            <input id="news-query" class="form-control" placeholder="search term (default: covid-19)">
+            <button id="fetch-go-btn" class="btn btn-outline-secondary">Fetch</button>
+          </div>
+          <div id="news-container" class="panel-content mt-3"></div>
+        </div>
+      </div>
+
+      <!-- ANALYSIS COLUMN -->
+      <div class="col-md-4 mb-4">
+        <div class="panel h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Analysis</h2>
+          </div>
+          <div class="panel-content">
+            <button id="simulate-btn" class="btn btn-success w-100 mb-4">Simulate</button>
+
+            <div id="simulation-results" class="d-none">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="h5 mb-2">Simulation Summary</h3>
+                  <p id="simulation-summary" class="small mb-0"></p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <h3 class="h5 mb-3">Attitude Changes Graph</h3>
+                  <div class="chart-container" style="height:200px;">
+                    <canvas id="attitude-chart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="no-results-message" class="text-center text-muted py-4">
+              Click “Simulate” to run the simulation and see results.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIG CHART (hidden until simulate) -->
+    <div class="row mt-5 d-none" id="big-chart-section">
+      <div class="col-md-6 offset-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="h5 mb-3 text-center">Overall Attitude Changes</h3>
+            <div class="chart-container" style="height:400px;">
+              <canvas id="big-attitude-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENT MODAL -->
+  <div class="modal fade" id="agent-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="agent-modal-title">Add New Agent</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="agent-form">
+          <input type="hidden" id="agent-id">
+          <div class="mb-3">
+            <label for="agent-age" class="form-label">Age *</label>
+            <input type="number" class="form-control" id="agent-age" required min="1" max="120">
+          </div>
+          <div class="mb-3">
+            <label for="agent-gender" class="form-label">Gender *</label>
+            <select class="form-select" id="agent-gender" required>
+              <option value="" disabled selected>Select gender</option>
+              <option>Male</option><option>Female</option><option>Non-binary</option><option>Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="agent-attitude" class="form-label">Current Vaccine Attitude *</label>
+            <select class="form-select" id="agent-attitude" required>
+              <option value="" disabled selected>Select attitude</option>
+              <option value="-1">😠 Resistant</option>
+              <option value="0">😐 Neutral</option>
+              <option value="1">🙂 Likely</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="agent-income" class="form-label">Income Level</label>
+            <select class="form-select" id="agent-income">
+              <option value="" selected>Select income level</option>
+              <option>Low</option><option>Middle</option><option>High</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="agent-education" class="form-label">Education</label>
+            <select class="form-select" id="agent-education">
+              <option value="" selected>Select education level</option>
+              <option>High School</option><option>Bachelor's</option><option>Master's</option><option>PhD</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="agent-traits" class="form-label">Personality Traits</label>
+            <input type="text" class="form-control" id="agent-traits" placeholder="e.g., cautious, analytical">
+          </div>
+          <button type="button" id="generate-profile-btn" class="btn btn-outline-secondary w-100 mb-3">
+            Generate with AI
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="save-agent-btn" class="btn btn-primary">Save</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- NEWS MODAL -->
+  <div class="modal fade" id="news-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="news-modal-title">Add News</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="news-form">
+          <input type="hidden" id="news-id">
+          <div class="mb-3">
+            <label for="news-title" class="form-label">News Title *</label>
+            <input type="text" class="form-control" id="news-title" required>
+          </div>
+          <div class="mb-3">
+            <label for="news-truthfulness" class="form-label">Truthfulness *</label>
+            <select class="form-select" id="news-truthfulness" required>
+              <option value="" disabled selected>Select truthfulness</option>
+              <option>True</option><option>Fake</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="news-sentiment" class="form-label">Sentiment *</label>
+            <select class="form-select" id="news-sentiment" required>
+              <option value="" disabled selected>Select sentiment</option>
+              <option>Pro-vaccine</option><option>Anti-vaccine</option><option>Fear-based</option><option>Neutral</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="news-content" class="form-label">Content</label>
+            <textarea class="form-control" id="news-content" rows="3" placeholder="Enter news content..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="news-source" class="form-label">Source</label>
+            <input type="text" class="form-control" id="news-source" placeholder="e.g., CDC">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="save-news-btn" class="btn btn-primary">Save</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- VIEW NEWS MODAL -->
+  <div class="modal fade" id="view-news-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="view-news-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="view-news-badges" class="mb-3"></div>
+        <h6>Content:</h6>
+        <p id="view-news-content" class="small"></p>
+        <div id="view-news-source-container">
+          <h6>Source:</h6>
+          <p id="view-news-source" class="small mb-0"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Scripts (dependencies first) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.1"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

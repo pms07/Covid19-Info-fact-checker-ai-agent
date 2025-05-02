@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- jQuery & Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
+    <!-- Custom Login Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='login_style.css') }}" />
+  </head>
+
+  <body>
+    <!-- Fixed Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" id="mainNavbar">
+      <a class="navbar-brand" href="#">ChatBud</a>
+    </nav>
+
+    <!-- Main content wrapper (login form) -->
+    <main class="login-main d-flex align-items-center justify-content-center">
+      <div class="login-card container">
+        <h2>Login</h2>
+        <form action="/login" method="post">
+          <div class="form-group text-left">
+            <label for="username">Username:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+              required
+            />
+          </div>
+          <div class="form-group text-left">
+            <label for="password">Password:</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        <hr />
+
+        <!-- Signup Button (opens modal) -->
+        <div class="text-center">
+          <button
+            type="button"
+            class="btn btn-secondary signup-btn"
+            data-toggle="modal"
+            data-target="#signupModal"
+          >
+            Don’t have an account? Sign Up
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Signup modal -->
+    <div
+      class="modal fade"
+      id="signupModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="signupModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content modal-signup-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="signupModalLabel">Signup</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <form action="/signup" method="post">
+              <div class="form-group">
+                <label for="new_username">Username:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="new_username"
+                  name="new_username"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="new_password">Password:</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="new_password"
+                  name="new_password"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                Signup
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
