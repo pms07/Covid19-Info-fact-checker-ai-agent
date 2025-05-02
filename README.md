@@ -158,7 +158,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ![Home Page](demo_images/homepage.png)
 2. Report generated with AI Agent Workflow
 ![Graph Predictions](demo_images/summary_report.png)
-3. Top level AI Agent workflow (Decision Maker - Information collector)
+3. Top level AI Agent Simulation (Decision Maker - Information collector)
 ![Graph Predictions](demo_images/workflow.png)
 4. Application Internal Workflow
 ![Graph Predictions](demo_images/user_workflow.png)
