@@ -3,7 +3,12 @@
 
 A web-based simulation dashboard for modeling how individuals respond to vaccine-related news based on their demographic profiles and personality traits.
 
-![Vaccine Hesitancy Simulation Lab](https://placeholder.svg?height=400&width=800)
+![license](https://img.shields.io/badge/license-MIT-blue.svg)
+
+> Team Members
+  - Yuhan Fu
+  - Kya Masoumi Ravandi
+  - Pavankumar Sakhare
 
 ## Introduction
 
@@ -147,6 +152,16 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## Demo Application Images 
+1. Home Page
+![Home Page](demo_images/homepage.png)
+2. Report generated with AI Agent Workflow
+![Graph Predictions](demo_images/summary_report.png)
+3. Top level AI Agent workflow (Decision Maker - Information collector)
+![Graph Predictions](demo_images/workflow.png)
+4. Application Internal Workflow
+![Graph Predictions](demo_images/user_workflow.png)
 
 ## License
 
