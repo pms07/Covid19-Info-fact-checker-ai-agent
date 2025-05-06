@@ -10,10 +10,10 @@ from dotenv import load_dotenv
 from simulate import run_simulation
 load_dotenv()
  
-NEWSAPI_KEY = '520af045f1d14dc2a4562c06b5e09b0a' # os.getenv('NEWSAPI_API_KEY')
-RAPIDAPI_API_KEY = '4febc1ea91msh53f1d85e3c6c2f5p16c152jsn8bcc9ca57f32' # os.getenv('RAPIDAPI_API_KEY')
-APIFY_KEY = 'apify_api_B8MYYPNyc789xXkOH9qChfvjwmtpDz1QdOsV' # os.getenv('APIFY_API_KEY')
-FACTCHECKER_KEY = 'AIzaSyC2o4SpZ8h6uFeUCdziqliposwLTuGOtn0' # os.getenv('FACTCHECKER_API_KEY')
+NEWSAPI_KEY = '##' # os.getenv('NEWSAPI_API_KEY')
+RAPIDAPI_API_KEY = '##' # os.getenv('RAPIDAPI_API_KEY')
+APIFY_KEY = '##' # os.getenv('APIFY_API_KEY')
+FACTCHECKER_KEY = '##' # os.getenv('FACTCHECKER_API_KEY')
 # ------------------------------------------------------------------ #
  
 app = Flask(__name__)
